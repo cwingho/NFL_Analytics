@@ -1,0 +1,16 @@
+OLB 12
+None 28
+T 2
+ILB 3
+DB 1
+FS 5
+LB 2
+MLB 4
+RB 6
+DE 5
+C 4
+TE 2
+DT 2
+WR 16
+CB 8
+SS 5
