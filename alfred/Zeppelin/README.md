@@ -1,5 +1,5 @@
 # Zeppelin: http://zeppelin.apache.org/
-### Installation Steps
+### Installation Steps for zeppeline
 
 Install Docker and download zeppelin docker image. 
 
