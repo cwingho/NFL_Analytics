@@ -1,0 +1,692 @@
+﻿{
+  "paragraphs": [
+    {
+      "text": "import org.apache.spark.sql.{SaveMode, SparkSession}\nimport org.apache.spark.sql.functions.{col, column, expr}\nimport org.apache.spark.sql.types._\n\nval spark = SparkSession.builder()\n    .appName(\"Data Sources and Formats\")\n    .config(\"spark.master\", \"local\")\n    .getOrCreate()\n\n  // InjuryRecord schema\n  //PlayerKey,GameID,PlayKey,BodyPart,Surface,DM_M1,DM_M7,DM_M28,DM_M42\nval injurySchema = StructType(Array(\n    StructField(\"PlayerKey\", StringType),\n    StructField(\"GameID\", StringType),\n    StructField(\"PlayKey\", StringType),\n    StructField(\"BodyPart\", StringType),\n    StructField(\"Surface\", StringType),\n    StructField(\"DM_M1\", IntegerType),\n    StructField(\"DM_M7\", IntegerType),\n    StructField(\"DM_M28\", IntegerType),\n    StructField(\"DM_M42\", IntegerType)\n))",
+      "user": "anonymous",
+      "dateUpdated": "2020-10-18T06:44:28+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "import org.apache.spark.sql.{SaveMode, SparkSession}\nimport org.apache.spark.sql.functions.{col, column, expr}\nimport org.apache.spark.sql.types._\n\u001b[1m\u001b[34mspark\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.SparkSession\u001b[0m = org.apache.spark.sql.SparkSession@4c4a1ab\n\u001b[1m\u001b[34minjurySchema\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.types.StructType\u001b[0m = StructType(StructField(PlayerKey,StringType,true), StructField(GameID,StringType,true), StructField(PlayKey,StringType,true), StructField(BodyPart,StringType,true), StructField(Surface,StringType,true), StructField(DM_M1,IntegerType,true), StructField(DM_M7,IntegerType,true), StructField(DM_M28,IntegerType,true), StructField(DM_M42,IntegerType,true))\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1602992638035_1353949658",
+      "id": "paragraph_1602992638035_1353949658",
+      "dateCreated": "2020-10-18T03:43:58+0000",
+      "dateStarted": "2020-10-18T06:44:28+0000",
+      "dateFinished": "2020-10-18T06:44:29+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:2121"
+    },
+    {
+      "text": "  val injuryDF = spark.read\n    .schema(injurySchema)\n    .option(\"header\", \"true\")\n    .option(\"sep\", \",\")\n    .csv(\"/data/injuryRecord.csv\")\n\n    // adding a column\n  val newInjuryDF = injuryDF\n    .withColumnRenamed(\"PlayerKey\", \"InjPlayerKey\")\n    .withColumnRenamed(\"GameID\", \"InjGameID\")\n    .withColumnRenamed(\"PlayKey\", \"InjPlayKey\")\n    .withColumn(\"Severity\", col(\"DM_M1\") + col(\"DM_M7\") + col(\"DM_M28\") + col(\"DM_M42\"))\n\n  println(s\"The injuryDF has ${newInjuryDF.count()} rows\")",
+      "user": "anonymous",
+      "dateUpdated": "2020-10-18T06:47:11+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "The injuryDF has 105 rows\n\u001b[1m\u001b[34minjuryDF\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [PlayerKey: string, GameID: string ... 7 more fields]\n\u001b[1m\u001b[34mnewInjuryDF\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [InjPlayerKey: string, InjGameID: string ... 8 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=1",
+              "$$hashKey": "object:2285"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1603003481674_1954435585",
+      "id": "paragraph_1603003481674_1954435585",
+      "dateCreated": "2020-10-18T06:44:41+0000",
+      "dateStarted": "2020-10-18T06:47:11+0000",
+      "dateFinished": "2020-10-18T06:47:13+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2122"
+    },
+    {
+      "text": "  //PlayList schema\n  //PlayerKey,GameID,PlayKey,RosterPosition,PlayerDay,PlayerGame,StadiumType,\n  //FieldType,Temperature,Weather,PlayType,PlayerGamePlay,Position,PositionGroup\nval playListSchema = StructType(Array(\n    StructField(\"PlayerKey\", StringType),\n    StructField(\"GameID\", StringType),\n    StructField(\"PlayKey\", StringType),\n    StructField(\"RosterPosition\", StringType),\n    StructField(\"PlayerDay\", IntegerType),\n    StructField(\"PlayerGame\", IntegerType),\n    StructField(\"StadiumType\", StringType),\n    StructField(\"FieldType\", StringType),\n    StructField(\"Temperature\", FloatType),\n    StructField(\"Weather\", StringType),\n    StructField(\"PlayType\", StringType),\n    StructField(\"PlayerGamePlay\", IntegerType),\n    StructField(\"Position\", StringType),\n    StructField(\"PositionGroup\", StringType)\n))\nval playListDF = spark.read\n.schema(playListSchema)\n.option(\"header\", \"true\")\n.option(\"sep\", \",\")\n.csv(\"/data/PlayList.csv\")\n\nplayListDF.printSchema()\nprintln(s\"The PlayListDF has ${playListDF.count()} rows\")",
+      "user": "anonymous",
+      "dateUpdated": "2020-10-18T06:50:24+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- PlayerKey: string (nullable = true)\n |-- GameID: string (nullable = true)\n |-- PlayKey: string (nullable = true)\n |-- RosterPosition: string (nullable = true)\n |-- PlayerDay: integer (nullable = true)\n |-- PlayerGame: integer (nullable = true)\n |-- StadiumType: string (nullable = true)\n |-- FieldType: string (nullable = true)\n |-- Temperature: float (nullable = true)\n |-- Weather: string (nullable = true)\n |-- PlayType: string (nullable = true)\n |-- PlayerGamePlay: integer (nullable = true)\n |-- Position: string (nullable = true)\n |-- PositionGroup: string (nullable = true)\n\nThe PlayListDF has 267005 rows\n\u001b[1m\u001b[34mplayListSchema\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.types.StructType\u001b[0m = StructType(StructField(PlayerKey,StringType,true), StructField(GameID,StringType,true), StructField(PlayKey,StringType,true), StructField(RosterPosition,StringType,true), StructField(PlayerDay,IntegerType,true), StructField(PlayerGame,IntegerType,true), StructField(StadiumType,StringType,true), StructField(FieldType,StringType,true), StructField(Temperature,FloatType,true), StructField(Weather,StringType,true), StructField(PlayType,StringType,true), StructField(PlayerGamePlay,IntegerType,true), StructField(Position,StringType,true), StructField(PositionGroup,StringType,true))\n\u001b[1m\u001b[34mplayListDF\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [PlayerKey: string, GameID: string ... 12 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=2",
+              "$$hashKey": "object:2302"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1602993474559_-240919194",
+      "id": "paragraph_1602993474559_-240919194",
+      "dateCreated": "2020-10-18T03:57:54+0000",
+      "dateStarted": "2020-10-18T06:50:24+0000",
+      "dateFinished": "2020-10-18T06:50:28+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2123"
+    },
+    {
+      "text": "//PlayerTrackData schema\n  //PlayKey,time,event,x,y,dir,dis,o,s\n\n  val playerTrackSchema = StructType(Array(\n    StructField(\"PlayKey\", StringType),\n    StructField(\"time\", FloatType),\n    StructField(\"event\", StringType),\n    StructField(\"x\", FloatType),\n    StructField(\"y\", FloatType),\n    StructField(\"dir\", FloatType),\n    StructField(\"dis\", FloatType),\n    StructField(\"o\", FloatType),\n    StructField(\"s\",FloatType)\n  ))\n\n  val playerTrackDF = spark.read\n    .schema(playerTrackSchema)\n    .option(\"header\", \"true\")\n    .option(\"sep\", \",\")\n    .csv(\"/data/PlayerTrackData.csv\")\n\n  playerTrackDF.printSchema()\n  println(s\"The PlayerTrackDF has ${playerTrackDF.count()} rows\")",
+      "user": "anonymous",
+      "dateUpdated": "2020-10-18T06:51:07+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- PlayKey: string (nullable = true)\n |-- time: float (nullable = true)\n |-- event: string (nullable = true)\n |-- x: float (nullable = true)\n |-- y: float (nullable = true)\n |-- dir: float (nullable = true)\n |-- dis: float (nullable = true)\n |-- o: float (nullable = true)\n |-- s: float (nullable = true)\n\nThe PlayerTrackDF has 76366748 rows\n\u001b[1m\u001b[34mplayerTrackSchema\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.types.StructType\u001b[0m = StructType(StructField(PlayKey,StringType,true), StructField(time,FloatType,true), StructField(event,StringType,true), StructField(x,FloatType,true), StructField(y,FloatType,true), StructField(dir,FloatType,true), StructField(dis,FloatType,true), StructField(o,FloatType,true), StructField(s,FloatType,true))\n\u001b[1m\u001b[34mplayerTrackDF\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [PlayKey: string, time: float ... 7 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=3",
+              "$$hashKey": "object:2319"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1603003762134_-510322331",
+      "id": "paragraph_1603003762134_-510322331",
+      "dateCreated": "2020-10-18T06:49:22+0000",
+      "dateStarted": "2020-10-18T06:51:07+0000",
+      "dateFinished": "2020-10-18T06:53:47+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2124"
+    },
+    {
+      "text": "//Different body part and severity injury\n  val countByBodyPartDF = newInjuryDF\n    .groupBy(col(\"BodyPart\"), col(\"Severity\")) // includes null\n    .count()\n    .orderBy(\"BodyPart\", \"Severity\")\n  countByBodyPartDF.show()\n  //The injury count by different surface\n  val countBySurfaceDF = newInjuryDF\n    .groupBy(col(\"Surface\"), col(\"Severity\")) // includes null\n    .count()\n    .orderBy(\"Surface\", \"Severity\")\n  countBySurfaceDF.show()\n\n  //injuryPlayListDF: The game history of each injury player\n  val injuryAllPlayListDF = newInjuryDF.join(playListDF,\n    newInjuryDF.col(\"InjPlayerKey\") === playListDF.col(\"PlayerKey\"),\n    \"inner\")\n\n  injuryAllPlayListDF.printSchema()\n  //injuryAllPlayListDF.show(10)\n\n  val injuryAllGameHistoryPlayListDF = injuryAllPlayListDF.select(\n    \"InjPlayerKey\", \"PlayKey\",\n    \"RosterPosition\", \"PlayerDay\", \"PlayerGame\",\n    \"StadiumType\",\"FieldType\",\"Temperature\",\"Weather\",\n    \"PlayType\",\"PlayerGamePlay\",\"Position\",\"PositionGroup\")\n    .orderBy(\"InjPlayerKey\",\"PlayKey\",\"PlayerGamePlay\")\n\n  println(s\"The Injury PlayList History has ${injuryAllGameHistoryPlayListDF.count()} rows\")\n\n  val injuryGamePlayListDF = injuryAllPlayListDF.select(\n    \"InjPlayerKey\", \"InjGameID\", \"PlayKey\",\n    \"RosterPosition\", \"PlayerDay\", \"PlayerGame\",\n    \"StadiumType\",\"FieldType\",\"Temperature\",\"Weather\",\n    \"PlayType\",\"PlayerGamePlay\",\"Position\",\"PositionGroup\")\n    .where(col(\"InjGameID\") === col(\"GameID\"))\n    .orderBy(\"InjPlayerKey\",\"InjGameID\",\"PlayerGamePlay\")\n\n  println(s\"The Injury PlayList has ${injuryGamePlayListDF.count()} rows\")",
+      "user": "anonymous",
+      "dateUpdated": "2020-10-18T06:56:08+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+--------+--------+-----+\n|BodyPart|Severity|count|\n+--------+--------+-----+\n|   Ankle|       1|   16|\n|   Ankle|       2|   13|\n|   Ankle|       3|    2|\n|   Ankle|       4|   11|\n|    Foot|       3|    2|\n|    Foot|       4|    5|\n|    Heel|       2|    1|\n|    Knee|       1|   11|\n|    Knee|       2|   21|\n|    Knee|       3|    3|\n|    Knee|       4|   13|\n|    Toes|       1|    2|\n|    Toes|       2|    4|\n|    Toes|       3|    1|\n+--------+--------+-----+\n\n+---------+--------+-----+\n|  Surface|Severity|count|\n+---------+--------+-----+\n|  Natural|       1|   13|\n|  Natural|       2|   20|\n|  Natural|       3|    2|\n|  Natural|       4|   13|\n|Synthetic|       1|   16|\n|Synthetic|       2|   19|\n|Synthetic|       3|    6|\n|Synthetic|       4|   16|\n+---------+--------+-----+\n\nroot\n |-- InjPlayerKey: string (nullable = true)\n |-- InjGameID: string (nullable = true)\n |-- InjPlayKey: string (nullable = true)\n |-- BodyPart: string (nullable = true)\n |-- Surface: string (nullable = true)\n |-- DM_M1: integer (nullable = true)\n |-- DM_M7: integer (nullable = true)\n |-- DM_M28: integer (nullable = true)\n |-- DM_M42: integer (nullable = true)\n |-- Severity: integer (nullable = true)\n |-- PlayerKey: string (nullable = true)\n |-- GameID: string (nullable = true)\n |-- PlayKey: string (nullable = true)\n |-- RosterPosition: string (nullable = true)\n |-- PlayerDay: integer (nullable = true)\n |-- PlayerGame: integer (nullable = true)\n |-- StadiumType: string (nullable = true)\n |-- FieldType: string (nullable = true)\n |-- Temperature: float (nullable = true)\n |-- Weather: string (nullable = true)\n |-- PlayType: string (nullable = true)\n |-- PlayerGamePlay: integer (nullable = true)\n |-- Position: string (nullable = true)\n |-- PositionGroup: string (nullable = true)\n\nThe Injury PlayList History has 96081 rows\nThe Injury PlayList has 3403 rows\n\u001b[1m\u001b[34mcountByBodyPartDF\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [BodyPart: string, Severity: int ... 1 more field]\n\u001b[1m\u001b[34mcountBySurfaceDF\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [Surface: string, Severity: int ... 1 more field]\n\u001b[1m\u001b[34minjuryAllPlayListDF\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [InjPlayerKey: string, InjGameID: string ... 22 more fields]\n\u001b[1m\u001b[34minjuryAllGameHistoryPlayListDF\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [InjPlayerKey: string, PlayKey: string ... 11 more fields]\n\u001b[1m\u001b[34minjuryGamePlayListDF\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [InjPlayerKey: string, InjGameID: string ... 12 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=4",
+              "$$hashKey": "object:2336"
+            },
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=5",
+              "$$hashKey": "object:2337"
+            },
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=6",
+              "$$hashKey": "object:2338"
+            },
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=7",
+              "$$hashKey": "object:2339"
+            },
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=8",
+              "$$hashKey": "object:2340"
+            },
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=9",
+              "$$hashKey": "object:2341"
+            },
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=10",
+              "$$hashKey": "object:2342"
+            },
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=11",
+              "$$hashKey": "object:2343"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1603003857712_-37371720",
+      "id": "paragraph_1603003857712_-37371720",
+      "dateCreated": "2020-10-18T06:50:57+0000",
+      "dateStarted": "2020-10-18T06:56:08+0000",
+      "dateFinished": "2020-10-18T06:56:52+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2125"
+    },
+    {
+      "text": "countByBodyPartDF.createOrReplaceTempView(\"countByBodyPartDF\")\ncountBySurfaceDF.createOrReplaceTempView(\"countBySurfaceDF\")\n",
+      "user": "anonymous",
+      "dateUpdated": "2020-10-18T07:25:50+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1603003916996_128205828",
+      "id": "paragraph_1603003916996_128205828",
+      "dateCreated": "2020-10-18T06:51:56+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2126",
+      "dateFinished": "2020-10-18T07:25:51+0000",
+      "dateStarted": "2020-10-18T07:25:50+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      }
+    },
+    {
+      "user": "anonymous",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "multiBarChart",
+              "height": 300,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {
+                    "columns": [
+                      {
+                        "name": "BodyPart0",
+                        "visible": true,
+                        "width": "*",
+                        "sort": {},
+                        "filters": [
+                          {}
+                        ],
+                        "pinned": ""
+                      },
+                      {
+                        "name": "Severity1",
+                        "visible": true,
+                        "width": "*",
+                        "sort": {},
+                        "filters": [
+                          {}
+                        ],
+                        "pinned": ""
+                      },
+                      {
+                        "name": "count2",
+                        "visible": true,
+                        "width": "*",
+                        "sort": {},
+                        "filters": [
+                          {}
+                        ],
+                        "pinned": ""
+                      }
+                    ],
+                    "scrollFocus": {},
+                    "selection": [],
+                    "grouping": {
+                      "grouping": [],
+                      "aggregations": [],
+                      "rowExpandedStates": {}
+                    },
+                    "treeView": {},
+                    "pagination": {
+                      "paginationCurrentPage": 1,
+                      "paginationPageSize": 250
+                    }
+                  },
+                  "tableColumnTypeState": {
+                    "updated": false,
+                    "names": {
+                      "BodyPart": "string",
+                      "Severity": "string",
+                      "count": "string"
+                    }
+                  },
+                  "updated": false,
+                  "initialized": false,
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  }
+                },
+                "multiBarChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                },
+                "stackedAreaChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                }
+              },
+              "commonSetting": {},
+              "keys": [
+                {
+                  "name": "BodyPart",
+                  "index": 0,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [
+                {
+                  "name": "Severity",
+                  "index": 1,
+                  "aggr": "sum"
+                }
+              ],
+              "values": [
+                {
+                  "name": "Severity",
+                  "index": 1,
+                  "aggr": "sum"
+                }
+              ]
+            },
+            "helium": {}
+          }
+        },
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=13",
+              "$$hashKey": "object:5722"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1603003919218_-151596667",
+      "id": "paragraph_1603003919218_-151596667",
+      "dateCreated": "2020-10-18T06:51:59+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2127",
+      "text": "%sql\nselect * from countByBodyPartDF",
+      "dateUpdated": "2020-10-18T07:27:28+0000",
+      "dateFinished": "2020-10-18T07:19:19+0000",
+      "dateStarted": "2020-10-18T07:19:16+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "BodyPart\tSeverity\tcount\nAnkle\t1\t16\nAnkle\t2\t13\nAnkle\t3\t2\nAnkle\t4\t11\nFoot\t3\t2\nFoot\t4\t5\nHeel\t2\t1\nKnee\t1\t11\nKnee\t2\t21\nKnee\t3\t3\nKnee\t4\t13\nToes\t1\t2\nToes\t2\t4\nToes\t3\t1\n"
+          }
+        ]
+      }
+    },
+    {
+      "user": "anonymous",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1603003920043_-1699264859",
+      "id": "paragraph_1603003920043_-1699264859",
+      "dateCreated": "2020-10-18T06:52:00+0000",
+      "status": "ERROR",
+      "$$hashKey": "object:2128",
+      "text": "%sql\nselect * from countBySurfaceDF",
+      "dateUpdated": "2020-10-18T07:23:43+0000",
+      "dateFinished": "2020-10-18T07:23:43+0000",
+      "dateStarted": "2020-10-18T07:23:43+0000",
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Error happens in sql: select * from countBySurfaceDF\nTable or view not found: countBySurfaceDF; line 1 pos 14\nset zeppelin.spark.sql.stacktrace = true to see full stacktrace"
+          }
+        ]
+      }
+    },
+    {
+      "user": "anonymous",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "multiBarChart",
+              "height": 300,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "Surface": "string",
+                      "Severity": "string",
+                      "count": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                },
+                "multiBarChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                }
+              },
+              "commonSetting": {},
+              "keys": [
+                {
+                  "name": "Surface",
+                  "index": 0,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [
+                {
+                  "name": "Severity",
+                  "index": 1,
+                  "aggr": "sum"
+                }
+              ],
+              "values": [
+                {
+                  "name": "count",
+                  "index": 2,
+                  "aggr": "sum"
+                }
+              ]
+            },
+            "helium": {}
+          }
+        },
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://8e5143a59c38:4040/jobs/job?id=14",
+              "$$hashKey": "object:5669"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1603003920600_-1558201808",
+      "id": "paragraph_1603003920600_-1558201808",
+      "dateCreated": "2020-10-18T06:52:00+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2129",
+      "text": "%sql\nselect * from countBySurfaceDF",
+      "dateUpdated": "2020-10-18T07:27:09+0000",
+      "dateFinished": "2020-10-18T07:26:21+0000",
+      "dateStarted": "2020-10-18T07:26:18+0000",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "Surface\tSeverity\tcount\nNatural\t1\t13\nNatural\t2\t20\nNatural\t3\t2\nNatural\t4\t13\nSynthetic\t1\t16\nSynthetic\t2\t19\nSynthetic\t3\t6\nSynthetic\t4\t16\n"
+          }
+        ]
+      }
+    },
+    {
+      "user": "anonymous",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1603003921356_690473608",
+      "id": "paragraph_1603003921356_690473608",
+      "dateCreated": "2020-10-18T06:52:01+0000",
+      "status": "READY",
+      "$$hashKey": "object:2130"
+    }
+  ],
+  "name": "NFLData",
+  "id": "2FNAZUVYE",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-preview1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {
+    "isRunning": false
+  },
+  "path": "/NFLData"
+}
