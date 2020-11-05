@@ -1,12 +1,15 @@
 package NFL
 
+import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
 import org.apache.spark.ml.feature.{OneHotEncoderEstimator, StringIndexer, VectorAssembler}
 //https://medium.com/expedia-group-tech/deep-dive-into-apache-spark-window-functions-7b4e39ad3c86
-import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel}
+import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel,BinaryLogisticRegressionSummary}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.attribute._
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import org.apache.spark.ml.classification.{RandomForestClassificationModel, RandomForestClassifier}
+
+
 
 object NFLModel extends App{
 
@@ -31,27 +34,32 @@ object NFLModel extends App{
       return new VectorAssembler().setInputCols(inputColumnsArray).setOutputCol("features")
     }
 
-    def createLogisticRegressionModel(labelColumnName:String,InputColumnName:String):LogisticRegression ={
+    def createLogisticRegressionModel(labelColumnName:String,InputColumnName:String, maxIter:Integer, regParam: Double):LogisticRegression ={
       return new LogisticRegression()
         .setLabelCol(labelColumnName)
         .setFeaturesCol(InputColumnName)
-        .setMaxIter(1)
-        .setRegParam(0.05)
+        .setMaxIter(maxIter)
+        .setRegParam(regParam)
         .setElasticNetParam(0.0)
     }
 
-    def createRandomForestModel(labelColumnName:String,InputColumnName:String):RandomForestClassifier ={
+    def createRandomForestModel(labelColumnName:String,InputColumnName:String, numTrees: Integer, maxDept:Integer):RandomForestClassifier ={
       return new RandomForestClassifier()
         .setLabelCol(labelColumnName)
         .setFeaturesCol(InputColumnName)
-        .setNumTrees(2) // Default is 20
-        .setMaxDepth(1) // Default is 5
+        .setNumTrees(numTrees) // Default is 20
+        .setMaxDepth(maxDept) // Default is 5
     }
 
     def pipelineBuild(pipeLineInput:Pipeline, modelInputDF: DataFrame, modelType:String):Unit ={
 
-      val pipeline_model = pipeLineInput.fit(modelInputDF)
+      val Array(trainingData, testData) = modelInputDF.randomSplit(Array(0.5, 0.5))
 
+      val pipeline_model = pipeLineInput.fit(trainingData)
+
+      val predictions = pipeline_model.transform(testData)
+
+      //predictions.show(5)
       if(modelType == "LogisticRegression"){
         val lrModel = pipeline_model.stages.last.asInstanceOf[LogisticRegressionModel]
 
@@ -79,6 +87,7 @@ object NFLModel extends App{
         lrfeatureNames.zip(lrcoeffs).foreach { case (feature, coeff) =>
           println(s"$feature\t$coeff")
         }
+
       }
       else {
         val rfModel = pipeline_model.stages.last.asInstanceOf[RandomForestClassificationModel]
@@ -95,11 +104,19 @@ object NFLModel extends App{
         // Print feature names & Importances together
         println("Feature\tImportances")
         rf_features.zip(rfModelImportances).foreach { case (feature, importance) =>
+
           println(s"$feature\t$importance")
         }
       }
+      val evaluator = new BinaryClassificationEvaluator()
+        .setLabelCol("IsInjury")
+        .setRawPredictionCol("rawPrediction")
+        .setMetricName("areaUnderROC")
+      val roc_test = evaluator.evaluate(predictions)
+      println(s"ROC: $roc_test")
     }
   }
+
 
 }
 
