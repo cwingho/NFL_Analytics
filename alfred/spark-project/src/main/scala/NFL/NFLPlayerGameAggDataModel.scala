@@ -36,6 +36,7 @@ object NFLPlayerGameAggDataModel extends App{
 
   val lr_pipeline_model = new Pipeline().setStages(lr_pipelineStages)
 
+
   nflModel.pipelineBuild(lr_pipeline_model,modelInputColDF, "LogisticRegression")
 
   //RandomForest Model

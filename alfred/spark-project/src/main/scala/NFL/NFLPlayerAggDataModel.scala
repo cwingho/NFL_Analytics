@@ -5,6 +5,9 @@ import NFLSchema.dataSchema
 import NFLModel.ModelProcessing
 import org.apache.spark.sql.functions._
 import org.apache.spark.ml.Pipeline
+import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
+import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
+
 object NFLPlayerAggDataModel extends App{
 
   Logger.getLogger("org.apache.spark").setLevel(Level.OFF)
@@ -48,26 +51,41 @@ object NFLPlayerAggDataModel extends App{
     "clear","overcast","rain","snow","dome_closed","dome_open","indoor_closed","indoor_open",
     "outdoor","Natural","Synthetic"))
 
-  val lr_pipelineStages = Array(lr_featuresAssembler,nflModel.createLogisticRegressionModel
-  ("IsInjury","features",100,0.6))
+  val lrModel = nflModel.createLogisticRegressionModel("IsInjury","features",
+    100,0.6)
+  val lr_pipelineStages = Array(lr_featuresAssembler,lrModel)
 
   val lr_pipeline_model = new Pipeline().setStages(lr_pipelineStages)
 
-  nflModel.pipelineBuild(lr_pipeline_model,modelInputColDF, "LogisticRegression")
+  val lr_paramGrid = new ParamGridBuilder()
+    .addGrid(lrModel.regParam, Array(0.6, 0.62))
+    .addGrid(lrModel.elasticNetParam, Array(0.0, 0.1))
+    .addGrid(lrModel.fitIntercept, Array(true, false))
+    .addGrid(lrModel.maxIter, Array(58, 60, 62))
+    .build()
+
+  nflModel.pipelineBuild_CV(lr_pipeline_model, modelInputColDF, lr_paramGrid, "LogisticRegression")
 
   //RandomForest Model
+
   val rf_featuresAssembler = nflModel.createAssembler(Array("avg_NumRosterPosition",
     "avg_NumPlayTypePerGame","avg_NumPositionPerGame","avg_MaxPlayGamePlay","avg_Temperature",
     "avg_Rest_days","avg_o_mins_dir","avg_x_velocity","avg_y_velocity","avg_velocity",
     "clear","overcast","rain","snow","dome_closed","dome_open","indoor_closed","indoor_open",
     "outdoor","Natural","Synthetic"))
 
-  val rf_pipelineStages = Array(rf_featuresAssembler,nflModel.createRandomForestModel
-  ("IsInjury","features",100,10))
+  val rfModel = nflModel.createRandomForestModel("IsInjury","features",
+    100,10)
+  val rf_pipelineStages = Array(rf_featuresAssembler, rfModel)
 
-
+  val rf_paramGrid = new ParamGridBuilder()
+    .addGrid(rfModel.maxDepth, Array(10, 15,20))
+    .addGrid(rfModel.numTrees, Array(50, 60, 70))
+    .build()
   val rf_pipeline_model = new Pipeline().setStages(rf_pipelineStages)
-  nflModel.pipelineBuild(rf_pipeline_model,modelInputColDF, "RandomForest")
+  nflModel.pipelineBuild_CV(rf_pipeline_model,modelInputColDF, rf_paramGrid, "RandomForest")
+
+
 
 
 }
