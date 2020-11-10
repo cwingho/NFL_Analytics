@@ -4,9 +4,8 @@ version := "0.1"
 
 scalaVersion := "2.12.10"
 
-val sparkVersion = "3.0.1"
-val vegasVersion = "0.3.11"
-val mlibVersion = "2.4.7"
+val sparkVersion = "3.0.0"
+val mlibVersion = "3.0.0"
 
 
 resolvers ++= Seq(

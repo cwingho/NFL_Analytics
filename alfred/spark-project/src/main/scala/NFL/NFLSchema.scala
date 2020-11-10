@@ -7,12 +7,9 @@ import org.apache.spark.sql.functions._
 
 object NFLSchema {
 
-  class dataSchema(){
+  class dataSchema(sparkSession: SparkSession){
 
-    val spark = SparkSession.builder()
-      .appName("Data Sources and Formats")
-      .config("spark.master", "local")
-      .getOrCreate()
+    val spark = sparkSession
 
     val playListSchema = StructType(Array(
       StructField("play_PlayerKey", StringType),

@@ -1,7 +1,7 @@
 package NFL
 
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
-import org.apache.spark.ml.feature.{OneHotEncoderEstimator, StringIndexer, VectorAssembler}
+import org.apache.spark.ml.feature.{StringIndexer, VectorAssembler, OneHotEncoder}
 import org.apache.spark.ml.param.ParamMap
 import org.apache.spark.ml.tuning.CrossValidator
 //https://medium.com/expedia-group-tech/deep-dive-into-apache-spark-window-functions-7b4e39ad3c86
@@ -10,8 +10,6 @@ import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.attribute._
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import org.apache.spark.ml.classification.{RandomForestClassificationModel, RandomForestClassifier}
-
-
 
 object NFLModel extends App{
 
@@ -24,11 +22,10 @@ object NFLModel extends App{
 
     //("RosterPosition_index","StadiumType_index","FieldType_index","Weather_index")
     //Array("RosterPosition_vec","StadiumType_vec","FieldType_vec","Weather_vec")
-    def createOneHotEncode(inputColumnsArray: Array[String]): OneHotEncoderEstimator = {
+    def createOneHotEncode(inputColumnsArray: Array[String]): OneHotEncoder = {
       val indexColumnArray = for (e <- inputColumnsArray) yield e + "_index"
       val outputColumnArray = for (e <- inputColumnsArray) yield e + "_vec"
-      return new OneHotEncoderEstimator()
-        .setInputCols(indexColumnArray)
+      return new OneHotEncoder().setInputCols(indexColumnArray)
         .setOutputCols(outputColumnArray)
     }
 
