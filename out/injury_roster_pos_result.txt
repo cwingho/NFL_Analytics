@@ -1,9 +1,0 @@
-Linebacker 21
-None 28
-Defensive Lineman 7
-Offensive Lineman 6
-Running Back 6
-Safety 11
-Wide Receiver 16
-Cornerback 8
-Tight End 2

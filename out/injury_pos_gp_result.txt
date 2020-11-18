@@ -1,8 +1,0 @@
-OL 6
-None 28
-DB 19
-LB 21
-DL 7
-RB 6
-TE 2
-WR 16
