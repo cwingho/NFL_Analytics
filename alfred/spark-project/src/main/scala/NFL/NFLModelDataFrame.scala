@@ -4,17 +4,22 @@ import org.apache.spark.sql.functions.{col, column, expr}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.functions._
 import NFLSchema.dataSchema
+import org.apache.spark.sql.SparkSession
 
 
 object NFLModelDataFrame extends App{
-
-  Logger.getLogger("org.apache.spark").setLevel(Level.OFF)
 
   var injuryFilePath = "src/main/resources/data/injuryRecord.csv"
   var playListFilePath = "src/main/resources/data/PlayList.csv"
   var playTrackFilePath = "src/main/resources/data/PlayerTrackData.csv"
 
-  var schemaObj = new dataSchema()
+
+  val spark = SparkSession.builder()
+    .appName("Data Sources and Formats")
+    //.config("spark.master", "local") //Comment if run in AWS EMR
+    .getOrCreate()
+
+  var schemaObj = new dataSchema(spark)
 
   var injuryDF = schemaObj.readFile(injuryFilePath, schemaObj.injurySchema)
   val newInjuryDF = schemaObj.constructInjuryDF(injuryDF)

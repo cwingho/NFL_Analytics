@@ -22,7 +22,7 @@ object NFLTrackData extends App{
     .config("spark.master", "local")
     .getOrCreate()
 
-  var schemaObj = new dataSchema()
+  var schemaObj = new dataSchema(spark)
   val playerTrackDF = spark.read
     .schema(schemaObj.playerTrackSchema)
     .option("header", "true")
